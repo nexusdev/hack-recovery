@@ -75,8 +75,12 @@ This is a "Balance Retreivar" for the recursive call vulnerability for Maker-Otc
 
 **make sure you have dapple installed on your system and an ethereum homestead rpc node running on localhost:8545**
 
-1. clone this repo in git
-`git clone https://github.com/nexusdev/hack-recovery.git --recursive`
+1. clone this repo in git and make sure all submodules are present
+```
+git clone git@github.com:nexusdev/hack-recovery.git --recursive
+cd hack-recovery
+git submodule update --init --recursive
+```
 2. install the needed npm dependencies
 `npm i`
 3. run the script
@@ -143,7 +147,7 @@ var async = require('async');
 var BigNumber = require('bignumber.js');
 var fs = require('fs');
 
-var web3 = new Web3(new Web3.providers.HttpProvider("http://107.170.127.70:8545"));
+var web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 
 ```
 
@@ -292,7 +296,7 @@ var saveBalances = function (addresses, balances, cb) {
 
   fs.writeFileSync('dsEthToken.json', JSON.stringify(savedBalances, false, 2));
 
-  console.log("Total Sum:", web3.fromWei(totalSum,'ether').toString(10));
+  console.log("Total Sum:", web3.fromWei(totalSum,'ether').toString(10)+"eth");
   console.log("balances saved to ./dsEthToken.json");
   cb(null, savedBalances);
 }
@@ -324,6 +328,7 @@ var getDsEthTokenBalances = async.waterfall.bind(this, [
 
 
 
+#### SimpleMarket
 
 
 Next we will rescue the funds from **Maker-OTC**, in particular all acive
@@ -565,7 +570,6 @@ after ths we generate a human readabele document with all relevant information:
 
 ```
 var genDoc = function (err, docs) {
-  console.log(err, docs);
   let dsEthToken = docs[0];
   let simpleMarket = docs[1];
   var readmeTemplate = fs.readFileSync('README.md.tmp', {encoding: 'utf8'});

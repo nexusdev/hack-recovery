@@ -17,7 +17,7 @@ This is a "Balance Retreivar" for the recursive call vulnerability for Maker-Otc
 ```
 git clone git@github.com:nexusdev/hack-recovery.git --recursive
 cd hack-recovery
-git submodule update --recursive
+git submodule update --init --recursive
 ```
 2. install the needed npm dependencies
 `npm i`

@@ -21,7 +21,7 @@ var async = require('async');
 var BigNumber = require('bignumber.js');
 var fs = require('fs');
 
-var web3 = new Web3(new Web3.providers.HttpProvider("http://107.170.127.70:8545"));
+var web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 // #### DSEthToken
 // The first contract we want to rescue is the DSEthToken contract.
 // The known vulnerability was discovered in
@@ -97,6 +97,7 @@ var getDsEthTokenBalances = async.waterfall.bind(this, [
   getAllBalances,
   saveBalances
 ]);
+// #### SimpleMarket
 // Next we will rescue the funds from **Maker-OTC**, in particular all acive
 // orders from SimpleMarket@0xf51bc4633f5924465c8c6317169faf3e4312e82f
 var makerotc = require('./maker-otc.json');

@@ -207,7 +207,7 @@ var saveBalances = function (addresses, balances, cb) {
 
   fs.writeFileSync('dsEthToken.json', JSON.stringify(savedBalances, false, 2));
 
-  console.log("Total Sum:", web3.fromWei(totalSum,'ether').toString(10));
+  console.log("Total Sum:", web3.fromWei(totalSum,'ether').toString(10)+"eth");
   console.log("balances saved to ./dsEthToken.json");
   cb(null, savedBalances);
 }
@@ -480,7 +480,6 @@ after ths we generate a human readabele document with all relevant information:
 
 ```
 var genDoc = function (err, docs) {
-  console.log(err, docs);
   let dsEthToken = docs[0];
   let simpleMarket = docs[1];
   var readmeTemplate = fs.readFileSync('README.md.tmp', {encoding: 'utf8'});
