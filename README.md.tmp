@@ -11,18 +11,14 @@ This is a "Balance Retreivar" for the recursive call vulnerability for Maker-Otc
 
 ## Verify
 
-**make sure you have dapple installed on your system**
+**make sure you have dapple installed on your system and an ethereum homestead rpc node running on localhost:8545**
 
 1. clone this repo in git
-`git clone <repo> --recursive`
+`git clone https://github.com/nexusdev/hack-recovery.git --recursive`
 2. install the needed npm dependencies
 `npm i`
-3. build the project
-`npm build`
-4. make sure you have an ethereum homestead chain running under localhost:8545,
-otherwise edit your rpc endpoint in the `index.js` file
-5. run the script
-`npm run`
+3. run the script
+`make`
 
 ## How it Work
 <%= how %>

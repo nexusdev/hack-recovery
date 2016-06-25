@@ -12,4 +12,5 @@ ln -s dapple_packages/maker-otc/frontend/packages/dapple/build/classes.json make
 ln -s dapple_packages/maker-otc/dapple_packages/dappsys/build/classes.json dappsys.json
 
 # generate js documentation
-node_modules/docco/bin/docco index.js -l plain-markdown -o index.md
+node_modules/docco/bin/docco index.js -l plain-markdown -o .
+mv index.html index.md

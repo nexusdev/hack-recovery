@@ -9,7 +9,6 @@
 ```
 "use strict";
 
-
 ```
 
 
@@ -18,7 +17,7 @@
 
 
 
-The block height before the attack is **1679390** therefore we will retreive
+The block height before the attack is **1679390** so we will retreive
 the needed information from this block.
 
 
@@ -27,7 +26,6 @@ the needed information from this block.
 ```
 const blockHeight = 1679390;
 
-
 ```
 
 
@@ -36,7 +34,19 @@ const blockHeight = 1679390;
 
 
 
-first we set up our rescue environment
+### Overview
+1. DSEthToken
+    1. find all addresses which could hold tokens
+    2. find balances for each address
+    3. generate and save as object
+2. SimpleMarket
+    1. find numbere of offers
+    2. find all offers
+    3. filter for valide offers
+    4. sort and group offers by address and token
+    5. generate and save as object
+
+first we set up our environment
 
 
   
@@ -50,8 +60,6 @@ var fs = require('fs');
 
 var web3 = new Web3(new Web3.providers.HttpProvider("http://107.170.127.70:8545"));
 
-
-
 ```
 
 
@@ -60,6 +68,7 @@ var web3 = new Web3(new Web3.providers.HttpProvider("http://107.170.127.70:8545"
 
 
 
+#### DSEthToken
 The first contract we want to rescue is the DSEthToken contract.
 The known vulnerability was discovered in
 `dappsys@92a4fd915b69ccb2553994af3bded429a9467417`
@@ -72,8 +81,6 @@ Here we load its interface after we build it previously
 var dappsys = require('./dappsys.json');
 var DSEthToken = web3.eth.contract(JSON.parse(dappsys.DSEthToken.interface));
 var dsEthToken = DSEthToken.at('0xd654bdd32fc99471455e86c2e7f7d7b6437e9179');
-
-
 
 ```
 
@@ -88,7 +95,7 @@ Unfortunatelly we are dealing here with a mapping:
 `mapping( address => uint ) _balances;`
 therefore its not possible to query all addresses which hold tokens.
 However, we can filter all the Deposit and Transfer events to learn
-about app possible addresses, which could hold any tokens
+about all possible addresses, which could hold any tokens
 
 
   
@@ -101,7 +108,6 @@ var getAllEvents = async.parallel.bind(async, [
   deposits.get.bind(deposits),
   transfears.get.bind(transfears)
 ]);
-
 
 ```
 
@@ -120,16 +126,12 @@ In case of a Transfer, the receiver(to) could have ether
   
 
 ```
-
 var filterDeposits = function (event) {
   return event.args.who;
 }
-
 var filterTransfear = function (event) {
   return event.args.to;
 }
-
-
 
 ```
 
@@ -157,8 +159,6 @@ var filterAddresses = function (res, cb) {
   cb(null, _.uniq(addresses));
 }
 
-
-
 ```
 
 
@@ -179,7 +179,6 @@ var getAllBalances = (addresses, cb) => {
       (err, balances) => {cb(err, addresses, balances)})
 };
 
-
 ```
 
 
@@ -198,6 +197,8 @@ save it as dsEthToken.json
 var saveBalances = function (addresses, balances, cb) {
   let totalSum = new BigNumber(0);
   let savedBalances = {};
+  
+  console.log('\nResults for DSEthToken:');
   balances.forEach((balance, index) => {
     totalSum = totalSum.plus(balance);
     savedBalances[addresses[index]] = balance.toString(10);
@@ -206,12 +207,10 @@ var saveBalances = function (addresses, balances, cb) {
 
   fs.writeFileSync('dsEthToken.json', JSON.stringify(savedBalances, false, 2));
 
-  console.log("Total Sum:", web3.fromWei(totalSum,'ether'));
+  console.log("Total Sum:", web3.fromWei(totalSum,'ether').toString(10));
   console.log("balances saved to ./dsEthToken.json");
   cb(null, savedBalances);
 }
-
-
 
 ```
 
@@ -234,8 +233,6 @@ var getDsEthTokenBalances = async.waterfall.bind(this, [
   saveBalances
 ]);
 
-
-
 ```
 
 
@@ -255,7 +252,6 @@ var makerotc = require('./maker-otc.json');
 var SimpleMarket = web3.eth.contract(JSON.parse(makerotc.SimpleMarket.interface));
 var simpleMarket = SimpleMarket.at('0xf51bc4633f5924465c8c6317169faf3e4312e82f');
 
-
 ```
 
 
@@ -271,7 +267,6 @@ first we need to know how many orders there are:
 
 ```
 var getOrderNumber = simpleMarket.last_offer_id.bind(simpleMarket);
-
 
 ```
 
@@ -289,7 +284,6 @@ with that info we can get all orders with
 ```
 var getOffer = simpleMarket.offers.bind(simpleMarket);
 
-
 ```
 
 
@@ -305,7 +299,6 @@ we can get all offers provided we know how many there are
 
 ```
 var getAllOffers = (number, cb) => async.mapSeries.bind(async, _.range(number), getOffer, cb)()
-
 
 ```
 
@@ -362,7 +355,6 @@ and return interesting properties
   cb(null, interestingProperties);
 }
 
-
 ```
 
 
@@ -406,7 +398,7 @@ ensure we are aware of the owner
 
 
 
-in case we are ower => token aware
+in case we are (ower => token) aware
 => we add the token to the known balance
 in case we are not token aware
 => we simply add it
@@ -447,9 +439,10 @@ as simpleMarket.json
     });
   });
 
-  fs.writeFileSync(JSON.stringify(balances, false, 2), 'simpleMarket.json');
-}
+  fs.writeFileSync('simpleMarket.json', JSON.stringify(balances, false, 2));
 
+  cb(null, balances);
+}
 
 ```
 
@@ -472,7 +465,6 @@ var getSimpleMarketBalances = async.waterfall.bind(this, [
   constructInterestingObject
 ])
 
-
 ```
 
 
@@ -488,8 +480,9 @@ after ths we generate a human readabele document with all relevant information:
 
 ```
 var genDoc = function (err, docs) {
+  console.log(err, docs);
   let dsEthToken = docs[0];
-  let simpleMarket docs[1];
+  let simpleMarket = docs[1];
   var readmeTemplate = fs.readFileSync('README.md.tmp', {encoding: 'utf8'});
   var indexMd = fs.readFileSync('index.md', {encoding: 'utf8'});
 
@@ -509,16 +502,14 @@ var genDoc = function (err, docs) {
   
 
 ```
-  var dsEthTokenTable = `| Address | Ammount |\n| ------------- | ------------- |`
+  var dsEthTokenTable = `| Address | Ammount |\n| ------------- | ------------- |\n`
   + _.map(dsEthToken, (balance, address) => `| ${address} | ${balance} |`).join('\n');
 
-  var simpleMarketTable = `| Address | Token | Ammount |\n| ------------- | ------------- | ------------- |`
+  var simpleMarketTable = `| Address | Token | Ammount |\n| ------------- | ------------- | ------------- |\n`
   + _.flatten(_.map(simpleMarket, (tokens, address) =>
           _.map(tokens, (balance, token) =>
                 `| ${address} | ${token} | ${balance} |`))
                ).join('\n');
-  console.log(dsEthTokenTable);
-  console.log(simpleMarketTable);
 
   var scope = {
     how: indexMd,
@@ -535,7 +526,7 @@ var genDoc = function (err, docs) {
 
 
 
-generate the readme
+generate and save the readme
 
 
   
@@ -543,26 +534,9 @@ generate the readme
 ```
   var template = _.template(readmeTemplate);
   var readme = template(scope);
-
-
-```
-
-
-
-
-
-
-
-save the readme
-
-
-  
-
-```
   fs.writeFileSync('README.md', readme);
 
 }
-
 
 ```
 
@@ -582,6 +556,7 @@ async.parallel([
   getDsEthTokenBalances,
   getSimpleMarketBalances
 ], genDoc);
+console.log('running the tasks, this may take several minutes...');
 
 
 ```
