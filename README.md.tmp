@@ -1,0 +1,28 @@
+# Balance Retreival
+This is a "Balance Retreivar" for the recursive call vulnerability for Maker-Otc.
+
+## Results
+**Block: 1679390**
+### DSEthToken @ 0xd654bdd32fc99471455e86c2e7f7d7b6437e9179
+<%= dsEthToken %>
+
+### SimpleMarket @ 0xf51bc4633f5924465c8c6317169faf3e4312e82f
+<%= simpleMarket %>
+
+## Verify
+
+**make sure you have dapple installed on your system**
+
+1. clone this repo in git
+`git clone <repo> --recursive`
+2. install the needed npm dependencies
+`npm i`
+3. build the project
+`npm build`
+4. make sure you have an ethereum homestead chain running under localhost:8545,
+otherwise edit your rpc endpoint in the `index.js` file
+5. run the script
+`npm run`
+
+## How it Work
+<%= how %>

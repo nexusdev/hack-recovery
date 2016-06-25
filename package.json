@@ -1,0 +1,19 @@
+{
+  "name": "hack-recovery",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "./run.sh",
+    "run": "node index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "async": "^1.5.2",
+    "bignumber.js": "^2.3.0",
+    "docco": "^0.7.0",
+    "lodash": "^4.13.1",
+    "web3": "^0.16.0"
+  }
+}

@@ -1,0 +1,3 @@
+[submodule "dapple_packages/maker-otc"]
+	path = dapple_packages/maker-otc
+	url = https://github.com/MakerDAO/maker-otc.git
