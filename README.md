@@ -136,9 +136,9 @@ const blockHeight = 1679390;
     2. find balances for each address
     3. generate and save as object
 2. SimpleMarket
-    1. find numbere of offers
+    1. find number of offers
     2. find all offers
-    3. filter for valide offers
+    3. filter for valid offers
     4. sort and group offers by address and token
     5. generate and save as object
 
@@ -187,7 +187,7 @@ var dsEthToken = DSEthToken.at('0xd654bdd32fc99471455e86c2e7f7d7b6437e9179');
 
 
 We are interested in the balances of each address.
-Unfortunatelly we are dealing here with a mapping:
+Unfortunately we are dealing here with a mapping:
 `mapping( address => uint ) _balances;`
 therefore its not possible to query all addresses which hold tokens.
 However, we can filter all the Deposit and Transfer events to learn
@@ -213,7 +213,7 @@ var getAllEvents = async.parallel.bind(async, [
 
 
 
-after we retreive those events, we have to filter them for addresses,
+After we retrieve those events, we have to filter them for addresses,
 which could possibly hold ether:
 In case of a Deposit, the sender(who) could have ether
 In case of a Transfer, the receiver(to) could have ether
@@ -237,7 +237,7 @@ var filterTransfear = function (event) {
 
 
 
-apply the filter and concatenate the addresses to one array
+Apply the filter and concatenate the addresses to one array
 also we are just interested in unique addresses
 
 
@@ -263,7 +263,7 @@ var filterAddresses = function (res, cb) {
 
 
 
-now we have just to lookup and output the balances of each address
+Now we have just to lookup and output the balances of each address.
 
 
   
@@ -283,7 +283,7 @@ var getAllBalances = (addresses, cb) => {
 
 
 
-generate a balances object, which is a mapping (address => balance) and
+Generate a balances object, which is a mapping (address => balance) and
 save it as dsEthToken.json
 
 
@@ -316,7 +316,7 @@ var saveBalances = function (addresses, balances, cb) {
 
 
 
-now we created all our tasks to to retreive all importent information for dsEthToken
+Now we created all our tasks to to retrieve all important information for dsEthToken.
 
 
   
@@ -338,7 +338,7 @@ var getDsEthTokenBalances = async.waterfall.bind(this, [
 
 
 #### SimpleMarket
-Next we will rescue the funds from **Maker-OTC**, in particular all acive
+Next we will rescue the funds from **Maker-OTC**, in particular all active
 orders from SimpleMarket@0xf51bc4633f5924465c8c6317169faf3e4312e82f
 
 
@@ -357,7 +357,7 @@ var simpleMarket = SimpleMarket.at('0xf51bc4633f5924465c8c6317169faf3e4312e82f')
 
 
 
-first we need to know how many orders there are:
+First we need to know how many orders there are:
 
 
   
@@ -373,7 +373,7 @@ var getOrderNumber = simpleMarket.last_offer_id.bind(simpleMarket);
 
 
 
-with that info we can get all orders with
+With that info we can get all orders with.
 
 
   
@@ -389,7 +389,7 @@ var getOffer = simpleMarket.offers.bind(simpleMarket);
 
 
 
-we can get all offers provided we know how many there are
+We can get all offers provided we know how many there are.
 
 
   
@@ -405,8 +405,8 @@ var getAllOffers = (number, cb) => async.mapSeries.bind(async, _.range(number), 
 
 
 
-also we are just interested in **active** orders and in particular in
-who sells how much of what
+Also we are just interested in **active** orders and in particular in
+who sells how much of what.
 
 
   
@@ -422,7 +422,7 @@ var filterOffers = (offers, cb) => {
 
 
 
-get only active offers
+Get only active offers
 
 
   
@@ -438,7 +438,7 @@ get only active offers
 
 
 
-and return interesting properties
+and return interesting properties.
 
 
   
@@ -460,8 +460,8 @@ and return interesting properties
 
 
 
-After we got all the interesting stuff, we can summ over each user and toke
-to get the total offered ammount
+After we got all the interesting stuff, we can sum over each user and toke
+to get the total offered amount.
 
 
   
@@ -479,7 +479,7 @@ var constructInterestingObject = (offers, cb) => {
 
 
 
-ensure we are aware of the owner
+Ensure we are aware of the owner.
 
 
   
@@ -495,7 +495,7 @@ ensure we are aware of the owner
 
 
 
-in case we are (ower => token) aware
+In case we are (owner => token) aware
 => we add the token to the known balance
 in case we are not token aware
 => we simply add it
@@ -521,7 +521,7 @@ in case we are not token aware
 
 
 
-after this we also format the balance to decimals and save it 
+After this we also format the balance to decimals and save it
 as simpleMarket.json
 
 
@@ -549,7 +549,7 @@ as simpleMarket.json
 
 
 
-now we combine all our tasks to retreive the balances for SimpleMarket
+Now we combine all our tasks to retrieve the balances for SimpleMarket
 
 
   
@@ -570,7 +570,7 @@ var getSimpleMarketBalances = async.waterfall.bind(this, [
 
 
 
-after ths we generate a human readabele document with all relevant information:
+After this we generate a human readable document with all relevant information:
 
 
   
@@ -591,8 +591,8 @@ var genDoc = function (err, docs) {
 
 
 
- generate dsEthToken table
- generate simpleMarket table
+Generate dsEthToken table.
+Generate simpleMarket table.
 
 
   
@@ -622,7 +622,7 @@ var genDoc = function (err, docs) {
 
 
 
-generate and save the readme
+Generate and save the readme file.
 
 
   
@@ -642,7 +642,7 @@ generate and save the readme
 
 
 
-Run the tasks
+Run the tasks.
 
 
   
