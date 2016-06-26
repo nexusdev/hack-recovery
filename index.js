@@ -104,9 +104,9 @@ var makerotc = require('./maker-otc.json');
 var SimpleMarket = web3.eth.contract(JSON.parse(makerotc.SimpleMarket.interface));
 var simpleMarket = SimpleMarket.at('0xf51bc4633f5924465c8c6317169faf3e4312e82f');
 // first we need to know how many orders there are:
-var getOrderNumber = simpleMarket.last_offer_id.bind(simpleMarket);
+var getOrderNumber = simpleMarket.last_offer_id.bind(simpleMarket, blockHeight);
 // with that info we can get all orders with
-var getOffer = simpleMarket.offers.bind(simpleMarket);
+var getOffer = (number, cb) => simpleMarket.offers(number, blockHeight, cb);
 // we can get all offers provided we know how many there are
 var getAllOffers = (number, cb) => async.mapSeries.bind(async, _.range(number), getOffer, cb)()
 // also we are just interested in **active** orders and in particular in
@@ -141,15 +141,18 @@ var constructInterestingObject = (offers, cb) => {
         offer.ammount;
     }
   });
+  var totalETHBalance = new BigNumber(0);
   // after this we also format the balance to decimals and save it 
   // as simpleMarket.json
   console.log('\nResults for SimpleMarket:');
   _.each(balances, (tokens, owner) => {
     _.each(tokens, (balance, token) => {
+      if(token === 'ETH') totalETHBalance = totalETHBalance.plus(balance);
       balances[owner][token] = balance.toString(10);
       console.log(owner, token, balance.toString(10));
     });
   });
+  console.log("Total ETH Balance: "+totalETHBalance.toString(10));
 
   fs.writeFileSync('simpleMarket.json', JSON.stringify(balances, false, 2));
 
